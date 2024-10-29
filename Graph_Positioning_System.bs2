@@ -1,0 +1,284 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+
+x        VAR     Byte
+y        VAR     Byte
+position VAR     Nib  ' 4 bits for position index
+lineIdx  VAR     Byte
+
+line0    VAR     Byte
+line1    VAR     Byte
+line2    VAR     Byte
+line3    VAR     Byte
+line4    VAR     Byte
+line5    VAR     Byte
+line6    VAR     Byte
+line7    VAR     Byte
+line8    VAR     Byte
+line9    VAR     Byte
+line10   VAR     Byte
+line11    VAR     Byte
+line12    VAR     Byte
+line13    VAR     Byte
+line14   VAR     Byte
+line15   VAR     Byte
+line16    VAR     Byte
+line17    VAR     Byte
+line18    VAR     Byte
+line19   VAR     Byte
+DEBUG "       3|       ", CR
+DEBUG "       2|       ", CR
+DEBUG "       1|        ", CR
+DEBUG "  ------+-----", CR
+DEBUG "-3 -2 -1  1  2  3", CR
+DEBUG "      -2|       ", CR
+DEBUG "      -3|       ", CR
+DEBUG "Enter x (-3 to 3): "
+DEBUGIN SDEC x
+DEBUG "Enter y (3,2,1,0,-2,-3): "
+DEBUGIN SDEC y
+DEBUG CLS
+IF y > 3 THEN
+  y=y+20
+  DEBUG DEC y ,CR
+ENDIF
+FOR lineIdx = 0 TO 6
+
+   SELECT lineIdx
+
+      CASE 0 ' Line for y = 3
+         IF y = 3 THEN
+            GOSUB BuildLineWithAsterisk
+         ELSE
+            DEBUG "       3|       ", CR
+         ENDIF
+
+      CASE 1 ' Line for y = 2
+         IF y = 2 THEN
+            GOSUB BuildLineWithAsterisk
+         ELSE
+            DEBUG "       2|       ", CR
+         ENDIF
+
+      CASE 2 ' Line for y = 1
+         IF y = 1 THEN
+            GOSUB BuildLineWithAsterisk
+         ELSE
+            DEBUG "       1|       ", CR
+         ENDIF
+
+      CASE 3 ' Line for y = 0 (axis line)
+         IF y = 0 THEN
+            GOSUB BuildAxisLineWithAsterisk
+         ELSE
+            DEBUG "  ------+-----", CR
+         ENDIF
+
+      CASE 4 ' x-axis labels
+         IF y = 19 THEN
+            GOSUB BuildAxismarkLineWithAsterisk
+         ELSE
+            DEBUG "-3 -2 -1  1  2  3", CR
+         ENDIF
+
+      CASE 5 ' Line for y = -2
+         IF y = 18 THEN
+            GOSUB BuildLineWithAsterisk
+         ELSE
+            DEBUG "      -2|       ", CR
+         ENDIF
+
+      CASE 6 ' Line for y = -3
+         IF y = 17 THEN
+            GOSUB BuildLineWithAsterisk
+         ELSE
+            DEBUG "      -3|       ", CR
+         ENDIF
+
+   ENDSELECT
+
+NEXT
+
+END
+
+' Subroutine to build and display a line with an asterisk for y ? 0
+BuildLineWithAsterisk:
+  line0 = " "
+  IF y = 17 THEN
+    y = 3
+    line1 = " "
+    line2 = " "
+    line3 = " "
+    line4 = " "
+    line5 = " "
+    line6 = "-"
+    line7 = y + "0"
+    line8 = "|"
+    line9 = " "
+    line10 = " "
+    line11 = " "
+    line12 = " "
+    line13 = " "
+    line14 = " "
+    line15 = " "
+    line16 = " "
+    line17 = " "
+    line18 = " "
+    line19 = " "
+  ELSEIF y = 18 THEN
+    y = 2
+    line1 = " "
+    line2 = " "
+    line3 = " "
+    line4 = " "
+    line5 = " "
+    line6 = "-"
+    line7 = y + "0"
+    line8 = "|"
+    line9 = " "
+    line10 = " "
+    line11 = " "
+    line12 = " "
+    line13 = " "
+    line14 = " "
+    line15 = " "
+    line16 = " "
+    line17 = " "
+    line18 = " "
+    line19 = " "
+  ELSEIF y = 19 THEN
+    y = 2
+    line1 = " "
+    line2 = " "
+    line3 = " "
+    line4 = " "
+    line5 = " "
+    line6 = "-"
+    line7 = y + "0"
+    line8 = "|"
+    line9 = " "
+    line10 = " "
+    line11 = " "
+    line12 = " "
+    line13 = " "
+    line14 = " "
+    line15 = " "
+    line16 = " "
+    line17 = " "
+    line18 = " "
+    line19 = " "
+  ELSE
+    line1 = " "
+    line2 = " "
+    line3 = " "
+    line4 = " "
+    line5 = " "
+    line6 = " "
+    line7 = y + "0"
+    line8 = "|"
+    line9 = " "
+    line10 = " "
+    line11 = " "
+    line12 = " "
+    line13 = " "
+    line14 = " "
+    line15 = " "
+    line16 = " "
+    line17 = " "
+    line18 = " "
+    line19 = " "
+  ENDIF
+
+  ' Map x to position (x from -3 to 3 maps to positions 4 to 10)
+  position = x + 7
+  IF position >= 4 AND position <= 10 THEN
+    SELECT position
+      CASE 4: line1 = "*"
+      CASE 5: line4 = "*"
+      CASE 6: line6 = "*"
+      CASE 7: line8 = "*"
+      CASE 8: line10 = "*"
+      CASE 9: line14 = "*"
+      CASE 10: line17 = "*"
+
+    ENDSELECT
+  ENDIF
+
+  ' Display the line
+  DEBUG line0, line1, line2, line3, line4, line5, line6, line7, line8, line9, line10, line11, line12, line14 , line15, line16, line17 , line18, line19,CR
+RETURN
+
+' Subroutine to build and display the axis line with an asterisk for y = 0
+BuildAxisLineWithAsterisk:
+  line0 = "-"
+  line1 = "-"
+  line2 = "-"
+  line3 = "-"
+  line4 = "-"
+  line5 = "-"
+  line6 = "-"
+  line7 = "-"
+  line8 = "+"
+  line9 = "-"
+  line10 = "-"
+  line11 = "-"
+  line12 = "-"
+  line13 = "-"
+  line14 = "-"
+  line15 = "-"
+  line16 = "-"
+
+  ' Map x to position (x from -3 to 3 maps to positions 4 to 10)
+  position = x + 7
+  IF position >= 4 AND position <= 10 THEN
+    SELECT position
+      CASE 4: line4 = "*"
+      CASE 5: line5 = "*"
+      CASE 6: line6 = "*"
+      CASE 7: line8 = "*"
+      CASE 8: line10 = "*"
+      CASE 9: line13 = "*"
+      CASE 10: line16 = "*"
+    ENDSELECT
+  ENDIF
+
+  ' Display the line
+  DEBUG line0, line1, line2, line3, line4, line5, line6, line7, line8, line9, line10, line11, line12, line13 , line14, line15 , line16,CR
+RETURN
+
+BuildAxismarkLineWithAsterisk:
+  line0 = "-"
+  line1 = "3"
+  line2 = " "
+  line3 = "-"
+  line4 = "2"
+  line5 = " "
+  line6 = "-"
+  line7 = "1"
+  line8 = " "
+  line9 = " "
+  line10 = "1"
+  line11 = " "
+  line12 = " "
+  line13 = "2"
+  line14 = " "
+  line15 = " "
+  line16 = "3"
+
+  ' Map x to position (x from -3 to 3 maps to positions 4 to 10)
+  position = x + 7
+  IF position >= 4 AND position <= 10 THEN
+    SELECT position
+      CASE 4: line1 = "*"
+      CASE 5: line4 = "*"
+      CASE 6: line7 = "*"
+      CASE 7: line8 = "*"
+      CASE 8: line10 = "*"
+      CASE 9: line13 = "*"
+      CASE 10: line16 = "*"
+    ENDSELECT
+  ENDIF
+
+  ' Display the line
+  DEBUG line0, line1, line2, line3, line4, line5, line6, line7, line8, line9, line10, line11, line12, line13 , line14, line15 , line16,CR
+RETURN

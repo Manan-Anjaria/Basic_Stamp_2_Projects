@@ -1,0 +1,140 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+
+' Constants for pins
+    ' Button for tens digit
+ColdLED      CON 5    ' LED for "Cold" feedback
+HotLED       CON 4    ' LED for "Hot" feedback
+WinLED       CON 6    ' LED for "Win" feedback
+
+' Variables
+targetNumber VAR Byte ' Number to be guessed (0 to 99)
+guessNumber  VAR Byte ' Player's guess
+onesCount    VAR Byte ' Count of ones digit presses
+tensCount    VAR Byte ' Count of tens digit presses
+guessCount   VAR Byte ' Number of guesses made
+buttonState1 VAR Byte ' State of button B1
+buttonState2 VAR Byte ' State of button B2
+timeout      VAR Word ' Timeout counter
+idx VAR Byte
+' Constants
+PressTimeout CON 2000 ' Timeout in milliseconds (2 seconds)
+DebounceTime CON 50   ' Debounce time in milliseconds
+targetNumber = 77
+' Initialize LEDs and buttons
+LOW ColdLED
+LOW HotLED
+LOW WinLED
+
+' --- Initial Number Entry ---
+
+DEBUG "Initial number set to: ", DEC targetNumber, CR
+
+' --- Game Start ---
+guessCount = 0
+
+MainLoop:
+  IF guessCount = 3 THEN
+    GOSUB GameOver
+    END
+  ENDIF
+
+  guessCount = guessCount + 1
+  DEBUG CR, "Guess #", DEC guessCount, ": Enter your guess by pressing B1 (ones digit) and B2 (tens digit).", CR
+  GOSUB InputNumber
+  guessNumber = tensCount * 10 + onesCount
+  DEBUG "Your guess: ", DEC guessNumber, CR
+
+  ' Provide feedback
+  IF guessNumber = targetNumber THEN
+    HIGH WinLED
+    DEBUG "Win!", CR
+    PAUSE 2000
+    LOW WinLED
+    GOSUB Gamewin
+    END
+  ELSEIF guessNumber < targetNumber THEN
+    HIGH ColdLED
+    DEBUG "Cold (Too Low)", CR
+    PAUSE 2000
+    LOW ColdLED
+  ELSE
+    HIGH HotLED
+    DEBUG "Hot (Too High)", CR
+    PAUSE 2000
+    LOW HotLED
+  ENDIF
+
+  GOTO MainLoop
+
+' --- Subroutines ---
+
+' InputNumber: Subroutine to input ones and tens digits
+InputNumber:
+  onesCount = 0
+  tensCount = 0
+  timeout = 0
+
+  ' Wait for button presses with timeout
+  DO
+    GOSUB CheckButtons
+    PAUSE 20
+    timeout = timeout + 10
+    IF (buttonState1 = 1) OR (buttonState2 = 1) THEN
+      timeout = 0 ' Reset timeout if button is pressed
+    ENDIF
+  LOOP UNTIL timeout >= PressTimeout
+RETURN
+
+' CheckButtons: Subroutine to monitor button presses
+CheckButtons:
+  ' Check B1 (ones digit)
+  IF INL = %00000001 THEN ' B1 pressed
+    onesCount = onesCount + 1
+    DEBUG "B1 pressed. Ones digit count: ", DEC onesCount, CR
+    PAUSE DebounceTime
+    ' Wait for button release
+    DO WHILE INL =%00000001 : LOOP
+    PAUSE DebounceTime
+  ENDIF
+
+  ' Check B2 (tens digit)
+  IF INL = %00000010 THEN ' B2 pressed
+    tensCount = tensCount + 1
+    DEBUG "B2 pressed. Tens digit count: ", DEC tensCount, CR
+    PAUSE DebounceTime
+    ' Wait for button release
+    DO WHILE INL = %00000010 : LOOP
+    PAUSE DebounceTime
+  ENDIF
+RETURN
+
+' GameOver: Subroutine to blink all LEDs
+GameOver:
+  DEBUG "Game Over. Blinking all LEDs.", CR
+  FOR idx = 1 TO 5
+    HIGH ColdLED
+    HIGH HotLED
+    HIGH WinLED
+    PAUSE 500
+    LOW ColdLED
+    LOW HotLED
+    LOW WinLED
+    PAUSE 500
+  NEXT
+RETURN
+
+Gamewin:
+  DEBUG "Game won. Blinking all LEDs.", CR
+  FOR idx = 1 TO 50
+    HIGH ColdLED
+    LOW HotLED
+    PAUSE 50
+    LOW ColdLED
+    HIGH HotLEd
+    PAUSE 50
+    LOW HotLED
+  NEXT
+RETURN
+
+' --- End of Program ---
